@@ -3,7 +3,7 @@ import asyncio
 from pathlib import Path
 from dotenv import load_dotenv
 from vercel.blob import AsyncBlobClient, UploadProgressEvent
-from nanoid import generate
+
 
 # Load environment variables
 if not load_dotenv('.env.local'):
