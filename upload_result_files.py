@@ -74,7 +74,9 @@ async def upload_all_results() -> None:
         for file_info in uploaded_files:
 
             print(f"[{file_info['filename']}]({file_info['url']})")
-            print(f"  - **Pathname**: `{file_info['pathname']}`\n")
+
+            print(
+                "Format the following links in markdown format, if they are images, use GFM markdown format")
     else:
         print("No files found in './results' directory.")
 
