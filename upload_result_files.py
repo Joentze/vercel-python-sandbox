@@ -1,5 +1,6 @@
 """Upload result files to Vercel Blob storage."""
 import asyncio
+import mimetypes
 from pathlib import Path
 from dotenv import load_dotenv
 from vercel.blob import AsyncBlobClient, UploadProgressEvent
@@ -19,6 +20,9 @@ async def upload_file(client: AsyncBlobClient, filepath: Path) -> dict:
     """Upload a single file to Vercel Blob storage."""
     filename = filepath.name
 
+    # Get file media type
+    media_type, _ = mimetypes.guess_type(str(filepath))
+    
     # Read file bytes
     with open(filepath, 'rb') as f:
         file_bytes = f.read()
@@ -36,6 +40,7 @@ async def upload_file(client: AsyncBlobClient, filepath: Path) -> dict:
         "url": blob.url,
         "pathname": blob.pathname,
         "filename": filename,
+        "media_type": media_type,
     }
 
 
@@ -72,11 +77,17 @@ async def upload_all_results() -> None:
     if uploaded_files:
         print("# Uploaded Files\n")
         for file_info in uploaded_files:
-
-            print(f"[{file_info['filename']}]({file_info['url']})")
-
-            print(
-                "Format the following links in markdown format, if they are images, use GFM markdown format")
+            media_type = file_info.get('media_type', '')
+            filename = file_info['filename']
+            url = file_info['url']
+            
+            # Check if it's an image
+            if media_type and media_type.startswith('image/'):
+                # GFM markdown image format
+                print(f"![{filename}]({url})")
+            else:
+                # Regular markdown hyperlink format
+                print(f"[{filename}]({url})")
     else:
         print("No files found in './results' directory.")
 
